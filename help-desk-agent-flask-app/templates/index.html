@@ -26,6 +26,7 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">🤖 EHRM Help Desk Ticket Analysis Assistant</h1>
     <div class="chat-box mx-auto" style="max-width: 700px;">
+        <div id="chat-history" class="mb-3" style="max-height: 300px; overflow-y: auto;"></div>
         <form onsubmit="sendMessage(); return false;">
             <div class="mb-3">
                 <textarea id="user-input" class="form-control" rows="4" placeholder="Type your message here..."></textarea>
