@@ -19,9 +19,11 @@ function addToHistory(sender, text) {
 }
 
 async function sendMessage() {
-    const message = document.getElementById("user-input").value;
+    const inputBox = document.getElementById("user-input");
+    const message = inputBox.value;
 
     addToHistory("user", message);
+    inputBox.value = "";
 
     const response = await fetch("/ask", {
         method: "POST",
@@ -33,7 +35,6 @@ async function sendMessage() {
 
     const data = await response.json();
     addToHistory("assistant", data.response);
-    document.getElementById("user-input").value = "";
 }
 
 // Enable Enter to send, Shift+Enter to newline
