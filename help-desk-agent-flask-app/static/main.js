@@ -4,6 +4,7 @@ function loadHistory() {
     const history = JSON.parse(sessionStorage.getItem("chatHistory") || "[]");
     history.forEach(item => {
         const p = document.createElement("p");
+        p.classList.add(item.sender);
         const sender = item.sender === "user" ? "You" : "Assistant";
         p.textContent = `${sender}: ${item.text}`;
         historyDiv.appendChild(p);
