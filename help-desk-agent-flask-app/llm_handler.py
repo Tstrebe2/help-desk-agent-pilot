@@ -1,10 +1,6 @@
-from langchain_community.llms import FakeListLLM
+# llm_handler.py
+from agent import REACT_AGENT
 
-def get_llm_response(prompt):
-    fake_llm = FakeListLLM(responses=[
-                               "Hello", 
-                               "This app is currently under development.", 
-                               "Please check back later."
-                            ])
-    response = fake_llm.invoke(prompt)
-    return response
+def get_agent_response(prompt):
+    response = REACT_AGENT.invoke({"messages": [("user", prompt)]})
+    return response['messages'][-1].content
