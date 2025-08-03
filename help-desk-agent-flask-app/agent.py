@@ -1,9 +1,10 @@
 # agent.py
 from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
 from langchain_google_genai import ChatGoogleGenerativeAI
 from rag_tool import get_rag_tool
 
-def create_agent():
+def create_agent_with_memory():
     """
     Create a ReACT agent that uses the RAG tool for answering questions
     about EHR support tickets.
@@ -22,6 +23,12 @@ def create_agent():
     """
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=1.0)
     rag_tool = get_rag_tool()
-    return create_react_agent(model=llm, tools=[rag_tool], state_modifier=system_prompt)
-
-REACT_AGENT = create_agent()
+    tools = [rag_tool]
+    memory = MemorySaver()
+    agent = create_react_agent(
+        model=llm, 
+        tools=tools, 
+        state_modifier=system_prompt,
+        checkpointer=memory,
+    )
+    return agent
