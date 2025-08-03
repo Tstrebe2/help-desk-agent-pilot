@@ -8,6 +8,17 @@
         body {
             background-color: #f8f9fa;
         }
+        .va-header {
+            background-color: #112e51;
+        }
+        .va-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .va-logo {
+            height: 60px;
+        }
         .chat-box {
             background: #ffffff;
             border-radius: 10px;
@@ -17,11 +28,13 @@
     </style>
 </head>
 <body>
+<header class="va-header py-2">
+    <div class="container d-flex align-items-center">
+        <img src="{{ url_for('static', filename='images/va-logo.png') }}" alt="Department of Veterans Affairs" class="va-logo me-2">
+        <span class="va-title">EHRM Help Desk Ticket Analysis Assistant</span>
+    </div>
+</header>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">
-        <img src="{{ url_for('static', filename='images/va-logo.png') }}" alt="Department of Veterans Affairs" style="height:60px; vertical-align: middle; margin-right: 10px;">
-        EHRM Help Desk Ticket Analysis Assistant
-    </h1>
     <div class="chat-box mx-auto" style="max-width: 700px;">
         <div id="chat-history" class="mb-3" style="max-height: 300px; overflow-y: auto;"></div>
         <form onsubmit="sendMessage(); return false;">
