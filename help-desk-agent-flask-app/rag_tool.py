@@ -1,13 +1,17 @@
-
+# rag_tool.py
+from langchain_core.documents import Document
+from typing import List
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.tools import convert_runnable_to_tool
 from pydantic import BaseModel, Field
-from retriever import VECTOR_STORE
+from retriever import load_helpdesk_ticket_vector_store
 
-class InputSchema(BaseModel):
+_vector_store = load_helpdesk_ticket_vector_store()
+
+class RAGToolArgsSchema(BaseModel):
     question: str = Field(
         description=(
             "A natural language question about electronic health record (EHR) system "
@@ -15,23 +19,23 @@ class InputSchema(BaseModel):
         )
     )
 
-def get_top_k_documents(query: str):
+def get_top_k_documents(query: str) -> List[Document]:
     """Retrieve the top-k documents based on the hyde query."""
-    top_k_documents = VECTOR_STORE.similarity_search(query, k=3)
+    top_k_documents = _vector_store.similarity_search(query, k=3)
     return top_k_documents
 
-def format_documents(documents):
+def format_documents(documents: List[Document]) -> str:
     """
-    Format retrieved docs so that each begins with [TicketID],
-    followed by EHR fields like Facility, EHRModule, etc.
-    Ensures that TicketID is exposed in exactly bracketed form.
+    Format the retrieved documents into a json string for output
+    that includes the TicketID and content.
     """
-    formatted = []
+    docs = []
+
     for doc in documents:
-        tid = doc.metadata.get("TicketID", "UNKNOWN_ID")
+        ticket_id = doc.metadata.get("TicketID", "UNKNOWN_ID")
         content = doc.page_content
-        formatted.append(f"TicketID: [{tid}]\n{content}")
-    return "\n\n".join(formatted)
+        docs.append(f"TicketID: [{ticket_id}]\n{content}")
+    return '\n\n'.join(docs)
 
 def get_rag_tool():
     """
@@ -62,6 +66,6 @@ def get_rag_tool():
             "Useful for answering questions about EHR system issues using information extracted from support tickets. "
             "Given a question, it generates a hypothesis passage, retrieves relevant tickets, and formats their contents."
         ),
-        args_schema=InputSchema
+        args_schema=RAGToolArgsSchema
     )
     return rag_tool

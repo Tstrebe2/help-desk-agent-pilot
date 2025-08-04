@@ -3,6 +3,7 @@ from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_google_genai import ChatGoogleGenerativeAI
 from rag_tool import get_rag_tool
+from ticket_citation_tool import ticket_citation_tool
 
 def create_agent_with_memory():
     """
@@ -10,25 +11,22 @@ def create_agent_with_memory():
     about EHR support tickets.
     """
     # Define the system prompt for the agent
-    system_prompt = """
-    You are a support assistant for EHR support tickets. Tools retrieve actual ticket records, and Ticket IDs are shown in square brackets — e.g. [c27b6138].
-
-    When answering a user's question:
-    - Summarize the explanation using Ticket IDs only in square brackets, never full metadata dump.
-    - For example: “The issue appears in [c27b6138], [48cf2892], [0dd06ea2] — it's related to delays in the Pharmacy module…”
-    - Always include at least one bracketed TicketID if relevant.
-    - If no ticket matches, say “I couldn't find any relevant ticket for that question.”
-
-    - Provide answers that are strictly based on ticket data. Do NOT hallucinate Ticket IDs.
-    """
+    system_prompt = (
+    "You are a helpful assistant for the Department of Veterans Affairs (VA) employees. "
+    "Your job is to help answer VA employees with questions about issues related to the "
+    "electronic health record modernization (EHRM) enterprise rollout. Always use the ticket "
+    "citation tool to cite specific tickets that you used in your answer. Only use ticket information "
+    "gathered from tools to answer questions. If you do not have enough information, "
+    "let the user know that you need more details or to clarify the question."
+    )
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=1.0)
     rag_tool = get_rag_tool()
-    tools = [rag_tool]
+    tools = [rag_tool, ticket_citation_tool]
     memory = MemorySaver()
     agent = create_react_agent(
         model=llm, 
         tools=tools, 
-        state_modifier=system_prompt,
+        prompt=system_prompt,
         checkpointer=memory,
     )
     return agent
