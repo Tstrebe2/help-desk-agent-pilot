@@ -1,12 +1,21 @@
+marked.setOptions({
+    gfm: true,
+    breaks: true
+});
+
 function loadHistory() {
     const historyDiv = document.getElementById("chat-history");
     historyDiv.innerHTML = "";
     const history = JSON.parse(sessionStorage.getItem("chatHistory") || "[]");
     history.forEach(item => {
-        const p = document.createElement("p");
-        const sender = item.sender === "user" ? "You" : "Assistant";
-        p.textContent = `${sender}: ${item.text}`;
-        historyDiv.appendChild(p);
+        const container = document.createElement("div");
+        const senderLabel = document.createElement("strong");
+        senderLabel.textContent = `${item.sender === "user" ? "You" : "Assistant"}:`;
+        const message = document.createElement("div");
+        message.innerHTML = marked.parse(item.text);
+        container.appendChild(senderLabel);
+        container.appendChild(message);
+        historyDiv.appendChild(container);
     });
     historyDiv.scrollTop = historyDiv.scrollHeight;
 }
