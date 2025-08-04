@@ -29,21 +29,42 @@ function addToHistory(sender, text) {
 
 async function sendMessage() {
     const inputBox = document.getElementById("user-input");
-    const message = inputBox.value;
+    const message = inputBox.value.trim();
+    if (!message) {
+        return;
+    }
+
+    const sendButton = document.querySelector("button[type='submit']");
+    sendButton.disabled = true;
 
     addToHistory("user", message);
     inputBox.value = "";
 
-    const response = await fetch("/ask", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `message=${encodeURIComponent(message)}`
-    });
+    const historyDiv = document.getElementById("chat-history");
+    const loadingDiv = document.createElement("div");
+    loadingDiv.id = "loading-indicator";
+    loadingDiv.innerHTML = "<div class='spinner-border text-primary' role='status'></div><span class='ms-2'>Processing...</span>";
+    historyDiv.appendChild(loadingDiv);
+    historyDiv.scrollTop = historyDiv.scrollHeight;
 
-    const data = await response.json();
-    addToHistory("assistant", data.response);
+    try {
+        const response = await fetch("/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `message=${encodeURIComponent(message)}`
+        });
+
+        const data = await response.json();
+        loadingDiv.remove();
+        addToHistory("assistant", data.response);
+    } catch (error) {
+        loadingDiv.remove();
+        addToHistory("assistant", "An error occurred. Please try again.");
+    } finally {
+        sendButton.disabled = false;
+    }
 }
 
 // Enable Enter to send, Shift+Enter to newline
