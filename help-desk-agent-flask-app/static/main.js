@@ -13,6 +13,7 @@ function loadHistory() {
         senderLabel.textContent = `${item.sender === "user" ? "You" : "Assistant"}:`;
         const message = document.createElement("div");
         message.innerHTML = marked.parse(item.text);
+        message.querySelectorAll('a').forEach(a => a.setAttribute('target', '_blank'));
         container.appendChild(senderLabel);
         container.appendChild(message);
         historyDiv.appendChild(container);
