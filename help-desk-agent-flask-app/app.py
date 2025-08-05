@@ -23,7 +23,7 @@ def ask():
 @app.route("/ticket/<ticket_id>")
 def ticket_detail(ticket_id: str):
     """Display an individual help desk ticket."""
-    db_path = os.path.join(app.root_path, "sqlite_db", "help_desk_agent.sqlite3")
+    db_path = "../../datasets/help-desk-tickets/sqlite_db/help_desk_agent.sqlite3"
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
