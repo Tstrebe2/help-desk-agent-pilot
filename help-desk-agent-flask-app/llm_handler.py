@@ -1,15 +1,15 @@
 # llm_handler.py
-from agent import create_agent_with_memory
+from agents.react_agent import create_react_agent_with_tools
 
-_react_agent = create_agent_with_memory()
+_config = {"configurable": {"thread_id": "tim-session-1"}}
+_react_agent = create_react_agent_with_tools()
 
 def get_agent_response(prompt):
-    config = {"configurable": {"thread_id": "tim-session-1"}}
 
     events = _react_agent.stream(
         {"messages": [{"role": "user", "content": prompt}]},
         stream_mode="values",
-        config=config,
+        config=_config,
     )
 
     last_message = None
