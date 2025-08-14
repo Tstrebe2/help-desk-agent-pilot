@@ -1,12 +1,19 @@
-# app.py
+import sys
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 from llm_handler import get_agent_response
 import sqlite3
-import os
+from langchain_core.globals import set_llm_cache
+from langchain_core.caches import InMemoryCache
 
 app = Flask(__name__)
-
 
 @app.route("/")
 def home():
@@ -40,4 +47,5 @@ def ticket_detail(ticket_id: str):
 
 if __name__ == "__main__":
     load_dotenv()
+    set_llm_cache(InMemoryCache())
     app.run(debug=True)

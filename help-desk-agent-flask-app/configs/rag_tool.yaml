@@ -1,0 +1,5 @@
+tool_config:
+  name: rag_tool
+  description: "Retrieves top three tickets related to the user's question. Provides a url for each ticket in the following format: [TicketID](URL)"
+  args_schema:
+    question_description: Question about the EHRM rollout that needs to be answered.
